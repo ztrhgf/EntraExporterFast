@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.0'
+    ModuleVersion = '1.0.1'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -74,6 +74,7 @@
         'internal\New-AzureBatchRequest.ps1'
         'internal\Invoke-AzureBatchRequest.ps1'
         'internal\Search-AzGraph2.ps1'
+        'internal\Get-MgGraphAllPages.ps1'
         'Connect-EntraExporter.ps1'
         'Export-Entra.ps1'
         'Get-EEDefaultSchema.ps1'
@@ -120,11 +121,8 @@
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags = 'Microsoft', 'Identity', 'Azure', 'Entra', 'AzureAD', 'AAD', 'PSEdition_Desktop', 'Windows', 'Export', 'Backup', 'DR'
 
-            # A URL to the license for this module.
-            LicenseUri = 'https://raw.githubusercontent.com/microsoft/entraexporter/main/LICENSE'
-
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/microsoft/entraexporter'
+            ProjectUri = 'https://github.com/ztrhgf/EntraExporterFast'
 
             # A URL to an icon representing this module.
             # IconUri = ''
@@ -133,6 +131,9 @@
             ReleaseNotes = '
             1.0.0
                 initial release of EntraExporterFast module
+            1.0.1
+                FIXED
+                    Get-MgGraphAllPages -missing dependency
             '
         } # End of PSData hashtable
 
