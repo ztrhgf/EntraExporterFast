@@ -7,10 +7,10 @@
   https://docs.microsoft.com/en-us/graph/api/accesspackageassignmentpolicy-list?view=graph-rest-beta&tabs=http
 
  .Example
-  _getEEAccessPackageAssignmentPolicies -Parents $parentIds -BasePath "C:\temp\AccessPackages"
+  Get-AccessPackageAssignmentPolicies -Parents $parentIds -BasePath "C:\temp\AccessPackages"
 #>
 
-Function _getEEAccessPackageAssignmentPolicies {
+Function Get-AccessPackageAssignmentPolicies {
   [CmdletBinding()]
   param
   (

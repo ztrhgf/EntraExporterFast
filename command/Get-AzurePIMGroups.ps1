@@ -1,4 +1,4 @@
-﻿function _getAzurePIMGroups {
+﻿function Get-AzurePIMGroups {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

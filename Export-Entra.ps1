@@ -1,75 +1,88 @@
-﻿<#
- .Synopsis
-  Exports Entra's configuration and settings for a tenant
- .Description
-  This cmdlet reads the configuration information from the target Entra tenant and produces the output files in a target directory
+﻿function Export-Entra {
+    <#
+    .SYNOPSIS
+    Exports Entra's configuration and settings for a tenant.
 
- .PARAMETER OutputDirectory
+    .DESCRIPTION
+    This cmdlet reads the configuration information from the target Entra tenant and produces the output files in a target directory.
+
+    .PARAMETER Path
     Specifies the directory path where the output files will be generated.
 
-.PARAMETER Type
+    .PARAMETER Type
     Specifies the type of objects to export. Default to Config which exports the key configuration settings of the tenant.
 
-.PARAMETER All
+    .PARAMETER All
     If specified performs a full export of all objects and configuration in the tenant.
 
-.EXAMPLE
-   .\Export-Entra -Path 'c:\temp\contoso'
+    .PARAMETER CloudUsersAndGroupsOnly
+    Excludes synched on-premises users and groups from the export. Only cloud-managed users and groups will be included.
 
-   Runs a default export and includes the key tenant configuration settings. Does not include large data collections such as users, static groups, applications, service principals, etc.
+    .EXAMPLE
+    Export-Entra -Path 'C:\EntraBackup\'
 
-   .EXAMPLE
-   .\Export-Entra -Path 'c:\temp\contoso' -All
+    Runs a default export and includes the key tenant configuration settings. Does not include large data collections such as users, static groups, applications, service principals, etc.
 
-   Runs a full export of all objects and configuration settings.
+    .EXAMPLE
+    Export-Entra -Path 'C:\EntraBackup\' -All
 
-.EXAMPLE
-   .\Export-Entra -Path 'c:\temp\contoso' -All -CloudUsersAndGroupsOnly
+    Runs a full export of all objects and configuration settings.
 
-   Runs a full export but excludes on-prem synced users and groups.
+    .EXAMPLE
+    Export-Entra -Path 'C:\EntraBackup\' -All -CloudUsersAndGroupsOnly
 
-.EXAMPLE
-   .\Export-Entra -Path 'c:\temp\contoso' -Type ConditionalAccess, AppProxy
+    Runs a full export but excludes on-prem synced users and groups.
 
-   Runs an export that includes just the Conditional Access and Application Proxy settings.
+    .EXAMPLE
+    Export-Entra -Path 'C:\EntraBackup\' -Type ConditionalAccess, AppProxy
 
-.EXAMPLE
-   .\Export-Entra -Path 'c:\temp\contoso' -Type B2C
+    Runs an export that includes just the Conditional Access and Application Proxy settings.
 
-   Runs an export of all B2C settings.
-#>
+    .EXAMPLE
+    Export-Entra -Path 'C:\EntraBackup\' -Type B2C
 
-Function Export-Entra {
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+    Runs an export of all B2C settings.
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'SelectTypes')]
+    param (
+
+        # The directory path where the output files will be generated.
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = 'AllTypes')]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = 'SelectTypes')]
         [String]$Path,
 
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('All', 'Config', 'AccessReviews', 'ConditionalAccess', 'Users', 'Groups', 'Applications', 'ServicePrincipals','B2C','B2B','AppProxy', 'Organization', 'Domains', 'EntitlementManagement', 'Policies', 'AdministrativeUnits', 'SKUs', 'Identity', 'Roles', 'Governance', 'Devices', 'IAM', 'AccessPolicies', 'PIM', 'PIMDirectoryRoles', 'PIMResources', 'PIMGroups')]
+        <# Specify the type of objects to export. Defaults to Config, which exports the key configuration settings of
+        the tenant. The available types are:
+            'All', 'Config', 'AccessReviews', 'ConditionalAccess', 'Users', 'Groups', 'Applications', 'ServicePrincipals',
+            'B2C', 'B2B', 'AppProxy', 'Organization', 'Domains', 'EntitlementManagement',
+            'Policies', 'AdministrativeUnits', 'SKUs', 'Identity', 'Roles', 'Governance', 'Devices', 'Teams', 'Sharepoint',
+            'RoleManagement', 'DirectoryRoles', 'ExchangeRoles', 'IntuneRoles', 'CloudPCRoles', 'EntitlementManagementRoles',
+            'Reports', and 'UsersRegisteredByFeatureReport', 'IAM', 'AccessPolicies', 'PIM', 'PIMDirectoryRoles', 'PIMResources', 'PIMGroups'.
+        #>
+        [Parameter(ParameterSetName = 'SelectTypes')]
+        [ValidateSet('All', 'Config', 'AccessReviews', 'ConditionalAccess', 'Users', 'Groups', 'Applications', 'ServicePrincipals', 'B2C', 'B2B', 'AppProxy', 'Organization', 'Domains', 'EntitlementManagement', 'Policies', 'AdministrativeUnits', 'SKUs', 'Identity', 'Roles', 'Governance', 'Devices', 'Teams', 'Sharepoint', 'RoleManagement', 'DirectoryRoles', 'ExchangeRoles', 'IntuneRoles', 'CloudPCRoles', 'EntitlementManagementRoles', 'Reports', 'UsersRegisteredByFeatureReport', 'IAM', 'AccessPolicies', 'PIM', 'PIMDirectoryRoles', 'PIMResources', 'PIMGroups')]
         [String[]]$Type = 'Config',
 
-        [Parameter(Mandatory = $false)]
-        [object]$ExportSchema,
+        # Perform a full export of all available configuration item types.
+        [Parameter(ParameterSetName = 'AllTypes')]
+        [switch]$All,
 
-        # Performs a full export if true
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $All,
+        # Exclude synced on-premises users and groups from the Entra export. Only cloud-managed users and groups will be included.
+        [Parameter(Mandatory = $false, ParameterSetName = 'AllTypes')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'SelectTypes')]
+        [switch]$CloudUsersAndGroupsOnly,
 
-        # Excludes onPrem synced users and groups from export
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $CloudUsersAndGroupsOnly
+        # Specifies the schema to use for the export. If not specified, the default schema will be used.
+        [Parameter(Mandatory = $false, ParameterSetName = 'AllTypes')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'SelectTypes')]
+        [object]$ExportSchema
     )
 
-    if (!($mgContext = Get-MgContext)) {
-        throw "No active connection. Run Connect-EntraExporter or Connect-MgGraph to sign in and then retry."
+    if ($null -eq (Get-MgContext)) {
+        throw 'No active connection. Run Connect-EntraExporter or Connect-MgGraph to sign in and then retry.'
     }
 
-    if($All) {$Type = @('All')}
-
+    if ($All) { $Type = @('All') }
     $global:Type = $Type #Used in places like Groups where Config flag will limit the resultset to just dynamic groups.
 
     if (!$ExportSchema) {
@@ -94,10 +107,6 @@ Function Export-Entra {
             else {
                 $entry.Filter = $entry.Filter + " and (onPremisesSyncEnabled ne true)"
             }
-        }
-        # get all PIM elements
-        if ($All -and ($graphUri -in "privilegedAccess/aadroles/resources","privilegedAccess/azureResources/resources")) {
-            $entry.Filter = $null
         }
     }
 
@@ -174,10 +183,12 @@ Function Export-Entra {
                     }
                 }
 
-                throw $err
+                Write-Error $err
+                break
             } else {
                 # other non-batch-related errors
-                throw $err
+                Write-Error $err
+                break
             }
         }
     }
@@ -212,7 +223,7 @@ Function Export-Entra {
 
                 # define how the command should be invoked
                 switch ($command) {
-                    {$command -in '_getEEAccessPackageAssignmentPolicies', '_getEEAccessPackageAssignments', '_getEEAccessPackageResourceScopes'} {
+                    {$command -in 'Get-AccessPackageAssignmentPolicies', 'Get-AccessPackageAssignments', 'Get-AccessPackageResourceScopes'} {
                         $commandParams = @{
                             Parents = $parentIds
                             BasePath = $basePath
@@ -346,23 +357,23 @@ Function Export-Entra {
             $commandParams = @{}
 
             switch ($command) {
-                '_getAzureResourceIAMData' {
+                'Get-AzureResourceIAMData' {
                     $commandParams.RootFolder = $outputFileName
                 }
 
-                '_getAzurePIMDirectoryRoles' {
+                'Get-AzurePIMDirectoryRoles' {
                     $commandParams.RootFolder = $outputFileName
                 }
 
-                '_getAzurePIMResources' {
+                'Get-AzurePIMResources' {
                     $commandParams.RootFolder = $outputFileName
                 }
 
-                '_getAzurePIMGroups' {
+                'Get-AzurePIMGroups' {
                     $commandParams.RootFolder = $outputFileName
                 }
 
-                '_getAzureResourceAccessPolicies' {
+                'Get-AzureResourceAccessPolicies' {
                     $commandParams.RootFolder = $outputFileName
                 }
 
@@ -496,4 +507,3 @@ Function Export-Entra {
     }
     #endregion output results
 }
-#TODO nahradit deprecated API

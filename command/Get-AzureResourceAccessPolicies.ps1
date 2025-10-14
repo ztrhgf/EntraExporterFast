@@ -1,4 +1,4 @@
-﻿function _getAzureResourceAccessPolicies {
+﻿function Get-AzureResourceAccessPolicies {
     param (
         [Parameter(Mandatory = $true)]
         [string] $rootFolder

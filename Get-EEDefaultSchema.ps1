@@ -253,6 +253,22 @@ function Get-EEDefaultSchema  {
             ApplicationPermission = 'Policy.Read.All'
         },
         @{
+            GraphUri = 'policies/defaultAppManagementPolicy'
+            Path = 'Policies/DefaultAppManagementPolicy'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'Policies')
+            DelegatedPermission = 'Policy.Read.All'
+            ApplicationPermission = 'Policy.Read.All'
+        },
+        @{
+            GraphUri = 'policies/appManagementPolicies'
+            Path = 'Policies/AppManagementPolicies'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'Policies')
+            DelegatedPermission = 'Policy.Read.All'
+            ApplicationPermission = 'Policy.Read.All'
+        },
+        @{
             GraphUri = 'policies/authenticationMethodsPolicy/authenticationMethodConfigurations/email'
             Path = 'Policies/AuthenticationMethodsPolicy/AuthenticationMethodConfigurations/Email.json'
             Tag = @('All', 'Config', 'Policies')
@@ -392,28 +408,28 @@ function Get-EEDefaultSchema  {
         # Identity Governance,
         @{
             GraphUri = 'identityGovernance/entitlementManagement/accessPackages'
-            Path = 'IdentityGovernance\EntitlementManagement\AccessPackages'
+            Path = 'IdentityGovernance/EntitlementManagement/AccessPackages'
             ApiVersion = 'beta'
             Tag = @('All', 'Governance', 'EntitlementManagement')
             DelegatedPermission = 'EntitlementManagement.Read.All'
             ApplicationPermission = 'EntitlementManagement.Read.All'
             Children = @(
                 @{
-                    Command = '_getEEAccessPackageAssignmentPolicies'
+                    Command = 'Get-AccessPackageAssignmentPolicies'
                     Path = 'AssignmentPolicies'
                     Tag = @('All', 'Governance', 'EntitlementManagement')
                     DelegatedPermission = 'EntitlementManagement.Read.All'
                     ApplicationPermission = 'EntitlementManagement.Read.All'
                 },
                 @{
-                    Command = '_getEEAccessPackageAssignments'
+                    Command = 'Get-AccessPackageAssignments'
                     Path = 'Assignments'
                     Tag = @('All', 'Governance', 'EntitlementManagement')
                     DelegatedPermission = 'EntitlementManagement.Read.All'
                     ApplicationPermission = 'EntitlementManagement.Read.All'
                 },
                 @{
-                    Command = '_getEEAccessPackageResourceScopes'
+                    Command = 'Get-AccessPackageResourceScopes'
                     Path = 'ResourceScopes'
                     Tag = @('All', 'Governance', 'EntitlementManagement')
                     DelegatedPermission = 'EntitlementManagement.Read.All'
@@ -524,83 +540,32 @@ function Get-EEDefaultSchema  {
             )
         },
 
-        # PIM
+        # PIM Directory Roles
         @{
-            GraphUri = 'privilegedAccess/aadroles/resources'
-            Path = 'PrivilegedAccess/AADRoles/Resources'
-            ApiVersion = 'beta'
-            Tag = @('All', 'Config', 'PIM', 'PIMAAD')
-            DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureAD'
-            ApplicationPermission = 'PrivilegedAccess.Read.AzureAD'
-            Children = @(
-                @{
-                    GraphUri = 'privilegedAccess/aadroles/resources/{id}/roleDefinitions'
-                    Path = 'RoleDefinitions'
-                    ApiVersion = 'beta'
-                    Filter = "Type ne 'BuiltInRole'"
-                    Tag = @('All', 'Config', 'PIM', 'PIMAAD')
-                    DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureAD'
-                    ApplicationPermission = 'PrivilegedAccess.Read.AzureAD'
-                },
-                @{
-                    GraphUri = 'privilegedAccess/aadroles/resources/{id}/roleSettings'
-                    Path = 'RoleSettings'
-                    ApiVersion = 'beta'
-                    Filter = 'isDefault eq false'
-                    Tag = @('All', 'Config', 'PIM', 'PIMAAD')
-                    DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureAD'
-                    ApplicationPermission = 'PrivilegedAccess.Read.AzureAD'
-                },
-                @{
-                    GraphUri = 'privilegedAccess/aadroles/resources/{id}/roleAssignments'
-                    Path = 'RoleAssignments'
-                    ApiVersion = 'beta'
-                    Filter = 'endDateTime eq null'
-                    Tag = @('All', 'Config', 'PIM', 'PIMAAD')
-                    DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureAD'
-                    ApplicationPermission = 'PrivilegedAccess.Read.AzureAD'
-                }
-            )
+            Path                  = 'PIM/DirectoryRoles'
+            Command                = 'Get-AzurePIMDirectoryRoles'
+            Tag                   = @('All', 'PIM', 'PIMDirectoryRoles')
+            DelegatedPermission   = 'RoleEligibilitySchedule.Read.Directory'
+            ApplicationPermission = 'RoleEligibilitySchedule.Read.Directory'
         },
-        #FIXME deprecated API (https://learn.microsoft.com/en-us/graph/api/governanceresource-list?view=graph-rest-beta&tabs=http) + is super slow to process thousands of resources
-        # @{
-        #     GraphUri = 'privilegedAccess/azureResources/resources'
-        #     Path = 'PrivilegedAccess/AzureResources/Resources'
-        #     ApiVersion = 'beta'
-        #     IgnoreError = 'The tenant has not onboarded to PIM.'
-        #     Tag = @('All', 'Config', 'PIM', 'PIMAzure')
-        #     DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureResources'
-        #     ApplicationPermission = 'PrivilegedAccess.Read.AzureResources'
-        #     Children = @(
-        #         @{
-        #             GraphUri = 'privilegedAccess/azureResources/resources/{id}/roleDefinitions'
-        #             Path = 'RoleDefinitions'
-        #             ApiVersion = 'beta'
-        #             Filter = "Type ne 'BuiltInRole'"
-        #             Tag = @('All', 'Config', 'PIM', 'PIMAzure')
-        #             DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureResources'
-        #             ApplicationPermission = 'PrivilegedAccess.Read.AzureResources'
-        #         },
-        #         @{
-        #             GraphUri = 'privilegedAccess/azureResources/resources/{id}/roleSettings'
-        #             Path = 'RoleSettings'
-        #             ApiVersion = 'beta'
-        #             Filter = 'isDefault eq false'
-        #             Tag = @('All', 'Config', 'PIM', 'PIMAzure')
-        #             DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureResources'
-        #             ApplicationPermission = 'PrivilegedAccess.Read.AzureResources'
-        #         },
-        #         @{
-        #             GraphUri = 'privilegedAccess/azureResources/resources/{id}/roleAssignments'
-        #             Path = 'RoleAssignments'
-        #             ApiVersion = 'beta'
-        #             Filter = 'endDateTime eq null'
-        #             Tag = @('All', 'Config', 'PIM', 'PIMAzure')
-        #             DelegatedPermission = 'PrivilegedAccess.ReadWrite.AzureResources'
-        #             ApplicationPermission = 'PrivilegedAccess.Read.AzureResources'
-        #         }
-        #     )
-        # },
+
+        # PIM Groups
+        @{
+            Path                  = 'PIM/Groups'
+            Command                = 'Get-AzurePIMGroups'
+            Tag                   = @('All', 'PIM','PIMGroups')
+            DelegatedPermission   = 'PrivilegedEligibilitySchedule.Read.AzureADGroup'
+            ApplicationPermission = 'PrivilegedEligibilitySchedule.Read.AzureADGroup'
+        },
+
+        # PIM Resources
+        @{
+            Path                  = 'PIM/Resources'
+            Command                = 'Get-AzurePIMResources'
+            Tag                   = @('All','PIM', 'PIMResources')
+            DelegatedPermission   = 'Directory.Read.All'
+            ApplicationPermission = 'Directory.Read.All'
+        }
 
         #Application Proxy
         @{
@@ -763,6 +728,13 @@ function Get-EEDefaultSchema  {
                     Tag = @('All', 'Applications')
                     DelegatedPermission = 'Policy.Read.All'
                     ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
+                },
+                @{
+                    GraphUri = "applications/{id}/appManagementPolicies"
+                    Path = 'AppManagementPolicies'
+                    Tag = @('All', 'Applications')
+                    DelegatedPermission = 'Policy.Read.All'
+                    ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
                 }
             )
         },
@@ -813,28 +785,35 @@ function Get-EEDefaultSchema  {
                 },
                 @{
                     GraphUri = 'servicePrincipals/{id}/claimsMappingPolicies'
-                    Path = 'claimsMappingPolicies'
+                    Path = 'ClaimsMappingPolicies'
                     Tag = @('All', 'ServicePrincipals')
                     DelegatedPermission = 'Policy.Read.All'
                     ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
                 },
                 @{
                     GraphUri = 'servicePrincipals/{id}/homeRealmDiscoveryPolicies'
-                    Path = 'homeRealmDiscoveryPolicies'
+                    Path = 'HomeRealmDiscoveryPolicies'
                     Tag = @('All', 'ServicePrincipals')
                     DelegatedPermission = 'Policy.Read.All'
                     ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
                 },
                 @{
                     GraphUri = 'servicePrincipals/{id}/tokenIssuancePolicies'
-                    Path = 'tokenIssuancePolicies'
+                    Path = 'TokenIssuancePolicies'
                     Tag = @('All', 'ServicePrincipals')
                     DelegatedPermission = 'Policy.Read.All'
                     ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
                 },
                 @{
                     GraphUri = 'servicePrincipals/{id}/tokenLifetimePolicies'
-                    Path = 'tokenLifetimePolicies'
+                    Path = 'TokenLifetimePolicies'
+                    Tag = @('All', 'ServicePrincipals')
+                    DelegatedPermission = 'Policy.Read.All'
+                    ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
+                },
+                @{
+                    GraphUri = 'servicePrincipals/{id}/appManagementPolicies'
+                    Path = 'AppManagementPolicies'
                     Tag = @('All', 'ServicePrincipals')
                     DelegatedPermission = 'Policy.Read.All'
                     ApplicationPermission = 'Policy.Read.All','Application.ReadWrite.All'
@@ -865,12 +844,134 @@ function Get-EEDefaultSchema  {
             DelegatedPermission = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
         },
-
+        # Teams
+        @{
+            GraphUri = 'teamwork'
+            Path = 'Admin/Teams/settings.json'
+            Filter = $null
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'Teams')
+            DelegatedPermission = 'Teamwork.Read.All'
+            ApplicationPermission = 'Teamwork.Read.All'
+        },
+        # Sharepoint
+        @{
+            GraphUri = 'admin/sharepoint/settings'
+            Path = 'Admin/Sharepoint/settings.json'
+            Filter = $null
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'Sharepoint')
+            DelegatedPermission = 'SharePointTenantSettings.Read.All'
+            ApplicationPermission = 'SharePointTenantSettings.Read.All'
+        },
+        # RoleManagement - Directory Role Definitions
+        @{
+            GraphUri = 'roleManagement/directory/roleDefinitions'
+            Path = 'RoleManagement/Directory/RoleDefinitions'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'DirectoryRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        },
+        # RoleManagement - Directory Role Assignments
+        @{
+            GraphUri = 'roleManagement/directory/roleAssignments'
+            Path = 'RoleManagement/Directory/RoleAssignments'
+            QueryParameters = @{ expand = 'principal' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'DirectoryRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        }   
+        # RoleManagement - Exchange Role Definitions
+        @{
+            GraphUri = 'roleManagement/exchange/roleDefinitions'
+            Path = 'RoleManagement/Exchange/RoleDefinitions'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'ExchangeRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        },
+        # RoleManagement - Exchange Role Assignments
+        @{
+            GraphUri = 'roleManagement/exchange/roleAssignments'
+            Path = 'RoleManagement/Exchange/RoleAssignments'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'ExchangeRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        },
+        # RoleManagement - Intune Role Definitions
+        @{
+            GraphUri = 'roleManagement/deviceManagement/roleDefinitions'
+            Path = 'RoleManagement/DeviceManagement/RoleDefinitions'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'IntuneRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        },
+        # RoleManagement - Intune Role Assignments
+        @{
+            GraphUri = 'roleManagement/deviceManagement/roleAssignments'
+            Path = 'RoleManagement/DeviceManagement/RoleAssignments'
+            QueryParameters = @{ expand = 'principals' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'IntuneRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        } 
+        # RoleManagement - CloudPC Role Definitions
+        @{
+            GraphUri = 'roleManagement/cloudPC/roleDefinitions'
+            Path = 'RoleManagement/CloudPC/RoleDefinitions'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'CloudPCRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        },
+        # RoleManagement - CloudPC Role Assignments
+        @{
+            GraphUri = 'roleManagement/cloudPC/roleAssignments'
+            Path = 'RoleManagement/CloudPC/RoleAssignments'
+            QueryParameters = @{ expand = 'principals' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'CloudPCRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        } 
+        # RoleManagement - Entitlement Management Role Definitions
+        @{
+            GraphUri = 'roleManagement/entitlementManagement/roleDefinitions'
+            Path = 'RoleManagement/EntitlementManagement/RoleDefinitions'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'EntitlementManagementRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'             
+        },
+        # RoleManagement - Entitlement Management Role Assignments
+        @{
+            GraphUri = 'roleManagement/entitlementManagement/roleAssignments'
+            Path = 'RoleManagement/EntitlementManagement/RoleAssignments'
+            QueryParameters = @{ expand = 'principal' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'EntitlementManagementRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        },
+        # Reports - Users Registered By Feature
+        @{
+            GraphUri = 'reports/authenticationMethods/microsoft.graph.usersRegisteredByFeature()'
+            Path = 'Reports/AuthenticationMethods/UsersRegisteredByFeature/report.json'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Reports', 'UsersRegisteredByFeatureReport')
+            DelegatedPermission = 'AuditLog.Read.All'            
+        },
+        
         # Permanent IAM role assignments
         @{
             Path                  = 'IAM'
             Filter                = $null
-            Command                = '_getAzureResourceIAMData'
+            Command                = 'Get-AzureResourceIAMData'
             Tag                   = @('All', 'IAM')
             DelegatedPermission   = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
@@ -879,35 +980,8 @@ function Get-EEDefaultSchema  {
         # Access Policies
         @{
             Path                  = 'AccessPolicies'
-            Command                = '_getAzureResourceAccessPolicies'
+            Command                = 'Get-AzureResourceAccessPolicies'
             Tag                   = @('All', 'AccessPolicies')
-            DelegatedPermission   = 'Directory.Read.All'
-            ApplicationPermission = 'Directory.Read.All'
-        },
-
-        # PIM Directory Roles
-        @{
-            Path                  = 'PIM/DirectoryRoles'
-            Command                = '_getAzurePIMDirectoryRoles'
-            Tag                   = @('All', 'PIM', 'PIMDirectoryRoles')
-            DelegatedPermission   = 'RoleEligibilitySchedule.Read.Directory'
-            ApplicationPermission = 'RoleEligibilitySchedule.Read.Directory'
-        },
-
-        # PIM Groups
-        @{
-            Path                  = 'PIM/Groups'
-            Command                = '_getAzurePIMGroups'
-            Tag                   = @('All', 'PIM','PIMGroups')
-            DelegatedPermission   = 'PrivilegedEligibilitySchedule.Read.AzureADGroup'
-            ApplicationPermission = 'PrivilegedEligibilitySchedule.Read.AzureADGroup'
-        },
-
-        # PIM Resources
-        @{
-            Path                  = 'PIM/Resources'
-            Command                = '_getAzurePIMResources'
-            Tag                   = @('All','PIM', 'PIMResources')
             DelegatedPermission   = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
         }

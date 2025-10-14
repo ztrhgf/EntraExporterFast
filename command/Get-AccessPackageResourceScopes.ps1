@@ -7,10 +7,10 @@
   https://docs.microsoft.com/en-us/graph/api/accesspackage-list-accesspackageresourcerolescopes?view=graph-rest-beta&tabs=http
 
  .Example
-  _getEEAccessPackageResourceScopes -Parents $parentIds -BasePath "C:\temp\AccessPackages"
+  Get-AccessPackageResourceScopes -Parents $parentIds -BasePath "C:\temp\AccessPackages"
 #>
 
-Function _getEEAccessPackageResourceScopes {
+Function Get-AccessPackageResourceScopes {
   [CmdletBinding()]
   param
   (

@@ -1,4 +1,4 @@
-﻿function _getAzurePIMResources {
+﻿function Get-AzurePIMResources {
     param (
         [Parameter(Mandatory = $true)]
         [string] $rootFolder
@@ -82,7 +82,6 @@
             }
         }
     }
-
     function Get-PIMResourceRoleAssignmentSetting {
         <#
         .SYNOPSIS
@@ -195,7 +194,6 @@
             $_ | select *, @{n = 'Policy'; e = { $assignmentSetting } }
         }
     }
-
     function Get-PIMSubscriptionEligibleAssignment {
         <#
         .SYNOPSIS

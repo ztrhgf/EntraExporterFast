@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.1'
+    ModuleVersion = '1.0.2'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -47,7 +47,7 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.2.0' }
+        @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.25.0' }, @{ ModuleName = 'Az.Accounts'; Guid = '17a2feff-488b-47f9-8729-e2cec094624c'; ModuleVersion = '4.0.0' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -75,18 +75,19 @@
         'internal\Invoke-AzureBatchRequest.ps1'
         'internal\Search-AzGraph2.ps1'
         'internal\Get-MgGraphAllPages.ps1'
+        'internal\Get-AzureDirectoryObject.ps1'
+        'command\Get-AccessPackageAssignmentPolicies.ps1'
+        'command\Get-AccessPackageAssignments.ps1'
+        'command\Get-AccessPackageResourceScopes.ps1'
+        'command\Get-AzureResourceIAMData.ps1'
+        'command\Get-AzureResourceAccessPolicies.ps1'
+        'command\Get-AzurePIMDirectoryRoles.ps1'
+        'command\Get-AzurePIMResources.ps1'
+        'command\Get-AzurePIMGroups.ps1'
         'Connect-EntraExporter.ps1'
         'Export-Entra.ps1'
         'Get-EEDefaultSchema.ps1'
         'Get-EERequiredScopes.ps1'
-        '_getEEAccessPackageAssignmentPolicies.ps1'
-        '_getEEAccessPackageAssignments.ps1'
-        '_getEEAccessPackageResourceScopes.ps1'
-        '_getAzureResourceIAMData.ps1'
-        '_getAzureResourceAccessPolicies.ps1'
-        '_getAzurePIMDirectoryRoles.ps1'
-        '_getAzurePIMResources.ps1'
-        '_getAzurePIMGroups.ps1'
     )
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -129,11 +130,15 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
-            1.0.0
-                initial release of EntraExporterFast module
+            1.0.2
+                CHANGED
+                    - Merged latest changes from original EntraExporter module
+                    - Requires Az.Accounts 4.0.0+ module now (IAM export)
             1.0.1
                 FIXED
                     Get-MgGraphAllPages -missing dependency
+            1.0.0
+                initial release of EntraExporterFast module
             '
         } # End of PSData hashtable
 

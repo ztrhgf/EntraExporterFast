@@ -1,4 +1,4 @@
-﻿function _getAzurePIMDirectoryRoles {
+﻿function Get-AzurePIMDirectoryRoles {
     param (
         [Parameter(Mandatory = $true)]
         [string] $rootFolder
