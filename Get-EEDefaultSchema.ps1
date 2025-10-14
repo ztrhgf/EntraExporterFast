@@ -565,6 +565,8 @@ function Get-EEDefaultSchema  {
             Tag                   = @('All','PIM', 'PIMResources')
             DelegatedPermission   = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
+            # RBAC role "Management Group Reader" assigned at "Tenant Root Group" level is required to be able to read Management Groups
+            # requires connection via Connect-AzAccount
         }
 
         #Application Proxy
@@ -975,6 +977,7 @@ function Get-EEDefaultSchema  {
             Tag                   = @('All', 'IAM')
             DelegatedPermission   = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
+            # requires connection via Connect-AzAccount
         },
 
         # Access Policies
@@ -984,6 +987,8 @@ function Get-EEDefaultSchema  {
             Tag                   = @('All', 'AccessPolicies')
             DelegatedPermission   = 'Directory.Read.All'
             ApplicationPermission = 'Directory.Read.All'
+            # requires connection via Connect-AzAccount
+            # requires 'Reader' role on 'Tenant Root Group' level (or the levels you want to export) to be able to read subscriptions and their resources!
         }
     )
 }

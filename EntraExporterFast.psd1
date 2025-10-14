@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.3'
+    ModuleVersion = '1.0.4'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -130,6 +130,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.4
+                CHANGED
+                    - IAM related fixes
             1.0.3
                 CHANGED
                     - Lower required module versions
