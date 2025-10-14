@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.2'
+    ModuleVersion = '1.0.3'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -47,7 +47,7 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.25.0' }, @{ ModuleName = 'Az.Accounts'; Guid = '17a2feff-488b-47f9-8729-e2cec094624c'; ModuleVersion = '4.0.0' }
+        @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.8.0' }, @{ ModuleName = 'Az.Accounts'; Guid = '17a2feff-488b-47f9-8729-e2cec094624c'; ModuleVersion = '3.0.2' }
     )
 
     # Assemblies that must be loaded prior to importing this module
@@ -130,6 +130,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.3
+                CHANGED
+                    - Lower required module versions
             1.0.2
                 CHANGED
                     - Merged latest changes from original EntraExporter module
