@@ -1,8 +1,13 @@
 ﻿function Get-AzurePIMResources {
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [string] $rootFolder
     )
+
+    if (!(Get-Command 'Get-AzAccessToken' -ErrorAction silentlycontinue) -or !($azAccessToken = Get-AzAccessToken -WarningAction SilentlyContinue -ErrorAction SilentlyContinue) -or $azAccessToken.ExpiresOn -lt [datetime]::now) {
+        throw "$($MyInvocation.MyCommand): Authentication needed. Please call Connect-AzAccount."
+    }
 
     #region functions
     function Expand-ObjectProperty {
@@ -82,6 +87,7 @@
             }
         }
     }
+
     function Get-PIMResourceRoleAssignmentSetting {
         <#
         .SYNOPSIS
@@ -164,6 +170,9 @@
         Get-PIMManagementGroupEligibleAssignment -Name IT_test
 
         Returns all PIM eligible IAM assignments over selected Azure Management Group.
+
+        .NOTES
+        Requires "Management Group Reader" role assigned at "Tenant Root Group" level to be able to read Management Groups!
         #>
 
         [CmdletBinding()]
@@ -183,6 +192,11 @@
             $managementGroupNameList = (Search-AzGraph2 -query "ResourceContainers| where type =~ 'microsoft.management/managementGroups'").Name
         }
 
+        if (!$managementGroupNameList) {
+            Write-Warning "No management groups found! Make sure you are granted 'Management Group Reader' role at 'Tenant Root Group' level!"
+            return
+        }
+
         New-AzureBatchRequest -url "https://management.azure.com/providers/Microsoft.Management/managementGroups/<placeholder>/providers/Microsoft.Authorization/roleEligibilitySchedules?api-version=2020-10-01&`$filter=atScope()" -placeholder $managementGroupNameList | Invoke-AzureBatchRequest | Expand-ObjectProperty -propertyName Properties | Expand-ObjectProperty -propertyName ExpandedProperties | ? memberType -EQ 'Direct' | % {
             if ($skipAssignmentSettings) {
                 $assignmentSetting = $null
@@ -194,6 +208,7 @@
             $_ | select *, @{n = 'Policy'; e = { $assignmentSetting } }
         }
     }
+    
     function Get-PIMSubscriptionEligibleAssignment {
         <#
         .SYNOPSIS
@@ -230,6 +245,11 @@
             $subscriptionId = $id
         } else {
             $subscriptionId = New-AzureBatchRequest -url "/subscriptions?api-version=2018-02-01" | Invoke-AzureBatchRequest | ? { $_.State -eq 'Enabled' } | select -ExpandProperty SubscriptionId
+        }
+
+        if (!$subscriptionId) {
+            Write-Warning "No subscriptions found!"
+            return
         }
 
         New-AzureBatchRequest -url "/subscriptions/<placeholder>/providers/Microsoft.Authorization/roleEligibilitySchedules?api-version=2020-10-01" -placeholder $subscriptionId | Invoke-AzureBatchRequest | Expand-ObjectProperty -propertyName Properties | Expand-ObjectProperty -propertyName ExpandedProperties | ? {$_.memberType -EQ 'Direct' -and $_.Scope.Type -ne "managementgroup" } | % {

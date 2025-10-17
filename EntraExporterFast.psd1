@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.4'
+    ModuleVersion = '1.0.5'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -47,14 +47,14 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.8.0' }, @{ ModuleName = 'Az.Accounts'; Guid = '17a2feff-488b-47f9-8729-e2cec094624c'; ModuleVersion = '3.0.2' }
+        @{ ModuleName = 'Az.Accounts'; Guid = '17a2feff-488b-47f9-8729-e2cec094624c'; ModuleVersion = '3.0.2' }, @{ ModuleName = 'Microsoft.Graph.Authentication'; Guid = '883916f2-9184-46ee-b1f8-b6a2fb784cee'; ModuleVersion = '2.8.0' }
     )
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    # ScriptsToProcess = @()
+    ScriptsToProcess = @("EntraExporterEnums.ps1")
 
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
@@ -88,12 +88,16 @@
         'Export-Entra.ps1'
         'Get-EEDefaultSchema.ps1'
         'Get-EERequiredScopes.ps1'
+        'Get-EEFlattenedSchema.ps1'
+        'Get-EEAzAuthRequirement.ps1'
     )
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @(
         'Connect-EntraExporter'
         'Export-Entra'
+        'Get-EERequiredScopes'
+        'Get-EEAzAuthRequirement'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -130,6 +134,11 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.5
+                CHANGED
+                    - auth reworked
+                    - used of enums for object types
+                    - enhanced schema
             1.0.4
                 CHANGED
                     - IAM related fixes
