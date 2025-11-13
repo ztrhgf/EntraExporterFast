@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.5'
+    ModuleVersion = '1.0.6'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -134,6 +134,11 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.6
+                FIXED
+                    - fixed detection of the used Graph authentication (app vs delegated)
+                    - hide convertto-json debug message
+                    - added missing "directory" export type
             1.0.5
                 CHANGED
                     - auth reworked
