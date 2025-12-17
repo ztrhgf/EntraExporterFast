@@ -134,6 +134,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.7
+                FIXED
+                    - fixed custom directory role ids in PIM export
             1.0.6
                 FIXED
                     - fixed detection of the used Graph authentication (app vs delegated)
