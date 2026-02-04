@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.7'
+    ModuleVersion = '1.0.8'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -76,6 +76,7 @@
         'internal\Search-AzGraph2.ps1'
         'internal\Get-MgGraphAllPages.ps1'
         'internal\Get-AzureDirectoryObject.ps1'
+        'internal\Invoke-FilePathCheck.ps1'
         'command\Get-AccessPackageAssignmentPolicies.ps1'
         'command\Get-AccessPackageAssignments.ps1'
         'command\Get-AccessPackageResourceScopes.ps1'
@@ -134,6 +135,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.8
+                FIXED
+                    - scoped long path check for PIM resources export only to Windows platform
             1.0.7
                 FIXED
                     - fixed custom directory role ids in PIM export
