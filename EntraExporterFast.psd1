@@ -134,7 +134,7 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview3'
+            Prerelease = 'preview4'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
