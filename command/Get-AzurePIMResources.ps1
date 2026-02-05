@@ -265,12 +265,10 @@
     }
     #endregion functions
 
-    $joinChar = "&"
-
     Get-PIMManagementGroupEligibleAssignment | % {
         $item = $_
 
-        $itemId = $item.roleEligibilityScheduleRequestId -replace "/", $joinChar
+        $itemId = Invoke-RoleEligibilityScheduleRequestIdSimplification -id $item.roleEligibilityScheduleRequestId
 
         $outputFileName = Join-Path -Path (Join-Path -Path $rootFolder -ChildPath "ManagementGroups") -ChildPath "$itemId.json"
 
@@ -282,7 +280,7 @@
     Get-PIMSubscriptionEligibleAssignment | ? { $_ } | % {
         $item = $_
 
-        $itemId = $item.roleEligibilityScheduleRequestId -replace "/", $joinChar
+        $itemId = Invoke-RoleEligibilityScheduleRequestIdSimplification -id $item.roleEligibilityScheduleRequestId
 
         $outputFileName = Join-Path -Path (Join-Path -Path $rootFolder -ChildPath "Subscriptions") -ChildPath "$itemId.json"
 
