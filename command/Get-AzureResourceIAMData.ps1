@@ -79,35 +79,27 @@ authorizationresources
     # get the principal name from its id
     $idToNameList = Get-AzureDirectoryObject -id ($kqlResult.principalId | select -Unique)
 
-    $joinChar = "&"
 
     # output the final results
     $kqlResult | select @{n = 'PrincipalName'; e = { $id = $_.PrincipalId; $result = $idToNameList | ? Id -EQ $id; if ($result.DisplayName) { $result.DisplayName } else { $result.mailNickname } } }, PrincipalId, PrincipalType, RoleDefinitionName, RoleDefinitionId, Scope, @{ n = 'ScopeType'; e = { _scopeType $_.scope } }, ManagementGroupId, SubscriptionId, SubscriptionName, ResourceGroup, CreatedOn, UpdatedOn | % {
         $item = $_
 
-        switch ($item.scopeType) {
-            'root' {
-                $outputPath = Join-Path -Path $assignmentsFolder -ChildPath "Root"
-            }
-            'managementGroup' {
-                $outputPath = Join-Path -Path (Join-Path -Path $assignmentsFolder -ChildPath "ManagementGroups") -ChildPath $item.ManagementGroupId
-            }
-            'subscription' {
-                $outputPath = Join-Path -Path (Join-Path -Path $assignmentsFolder -ChildPath "Subscriptions") -ChildPath $item.SubscriptionId
-            }
-            'resourceGroup' {
-                $outputPath = Join-Path -Path (Join-Path -Path (Join-Path -Path $assignmentsFolder -ChildPath "Subscriptions") -ChildPath $item.SubscriptionId) -ChildPath $item.ResourceGroup
-            }
-            'resource' {
-                # $folder = ($item.Scope.Split("/")[-3..-1] -join $joinChar)
-                $folder = $item.Scope -replace "/", $joinChar
-                $outputPath = Join-Path -Path (Join-Path -Path (Join-Path -Path (Join-Path -Path $assignmentsFolder -ChildPath "Subscriptions") -ChildPath $item.SubscriptionId) -ChildPath $item.ResourceGroup) -ChildPath $folder
-            }
-            default {
-                throw "Undefined scope type $($item.scopeType)"
-            }
+        if ($item.scopeType -eq 'root') {
+                $outputPath = Join-Path -Path $assignmentsFolder -ChildPath "root"
+        } else {
+            $joinChar = [System.IO.Path]::DirectorySeparatorChar
+
+            # simplify the scope to create more readable file names and avoid too long path issues
+            $folder = $item.Scope
+            $folder = $folder -replace "/providers/Microsoft.Management/", ""
+            
+            # replace remaining "/" with directory separator char to create folder structure based on the scope
+            $folder = $folder -replace "/", $joinChar
+
+            $outputPath = Join-Path -Path $assignmentsFolder -ChildPath $folder
         }
 
+        $joinChar = "&"
         $itemId = $item.principalId + $joinChar + ($item.roleDefinitionId).split("/")[-1]
 
         $outputFileName = Join-Path -Path $outputPath -ChildPath "$itemId.json"

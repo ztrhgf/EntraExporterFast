@@ -134,10 +134,16 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview2'
+            Prerelease = 'preview3'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.9-preview4
+                CHANGED
+                    - IAM and AccessPolicies export: creating directory structure to mimic the scope (to minimize long path issues)
+            1.0.9-preview3
+                FIXED
+                    - fixed id prefix replacement in Invoke-RoleEligibilityScheduleRequestIdSimplification
             1.0.9-preview2
                 FIXED
                     - sort issues on linux machines (replaced "sort" with "Sort-Object") 
