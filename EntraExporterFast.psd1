@@ -134,10 +134,13 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview4'
+            Prerelease = 'preview5'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.9-preview5
+                CHANGED
+                    - RAM optimization: one schema item (and children) processed at once. Instead of all parent schema (and all children items) items at once. 
             1.0.9-preview4
                 CHANGED
                     - IAM and AccessPolicies export: creating directory structure to mimic the scope (to minimize long path issues)
