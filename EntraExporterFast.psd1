@@ -134,10 +134,13 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview5'
+            Prerelease = 'preview6'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.9-preview6
+                FIXED
+                    - path processing on linux
             1.0.9-preview5
                 CHANGED
                     - RAM optimization: one schema item (and children) processed at once. Instead of all parent schema (and all children items) items at once. 

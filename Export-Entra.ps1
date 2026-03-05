@@ -383,7 +383,7 @@
                 throw "Item without RequestId. Shouldn't happen!"
             }
 
-            $outputFileName = $item.RequestId -replace "/", "\\"
+            $outputFileName = $item.RequestId -replace '[\\/]', [Regex]::Escape([IO.Path]::DirectorySeparatorChar)
             # remove the random number added to avoid duplicated ids in batch requests
             $outputFileName = _normalizeRequestId $outputFileName
 
