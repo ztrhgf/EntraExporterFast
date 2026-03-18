@@ -134,10 +134,14 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview6'
+            Prerelease = 'preview7'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.9-preview7
+                CHANGED
+                    - optimized batch request processing by running multiple batch requests in parallel (PowerShell Core only)
+                    - added ThrottleLimit parameter to Export-Entra to control the number of concurrent batch requests (PowerShell Core only)
             1.0.9-preview6
                 FIXED
                     - path processing on linux
