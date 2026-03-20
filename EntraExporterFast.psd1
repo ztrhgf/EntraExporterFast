@@ -134,10 +134,22 @@
             # A URL to an icon representing this module.
             # IconUri = ''
 
-            Prerelease = 'preview7'
+            # Prerelease = 'preview7'
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.9
+                FIXED
+                    - path processing on linux
+                    - sort issues on linux machines (replaced "sort" with "Sort-Object") 
+                    - fixed id prefix replacement in Invoke-RoleEligibilityScheduleRequestIdSimplification
+
+                CHANGED
+                    - optimized batch request processing by running multiple batch requests in parallel (PowerShell Core only)
+                    - added ThrottleLimit parameter to Export-Entra to control the number of concurrent batch requests (PowerShell Core only)
+                    - RAM optimization: one schema item (and children) processed at once. Instead of all parent schema (and all children items) items at once. 
+                    - IAM and AccessPolicies export: creating directory structure to mimic the scope (to minimize long path issues)
+                    - reworked how PIM assignments for Resources are being exported to avoid long path issues
             1.0.9-preview7
                 CHANGED
                     - optimized batch request processing by running multiple batch requests in parallel (PowerShell Core only)

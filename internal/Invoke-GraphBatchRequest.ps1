@@ -43,8 +43,13 @@
     Switch to return batch request errors one by one instead of all at once.
 
     .PARAMETER throttleLimit
-    Throttle limit for running batch requests in parallel (PowerShell Core only).
-    Adjust based on your environment and needs. Higher values may speed up the export but can lead to throttling by the Graph API and higher resource consumption, while lower values may reduce the chances of throttling but will take longer to complete.
+    Throttle limit for running batch requests in parallel.
+
+    Parallel processing is ONLY APPLIED if:
+     - there are at least 21 requests (i.e. more than one batch to process (one batch contains at most 20 individual requests)) to avoid unnecessary overhead of parallelization
+     - and if the script is run in PowerShell Core (natively supports parallelization).
+
+    Adjust the value based on your environment and needs. Higher values may speed up the export but can lead to throttling by the Graph API and higher resource consumption, while lower values may reduce the chances of throttling but will take longer to complete.
 
     By default 10, which means that at most 10 batch requests will be run at the same time.
 
@@ -537,23 +542,41 @@
     end {
         # process all accumulated requests in parallelized 20-item chunks
         if ($allRequest.Count -gt 0) {
-            $processChunkDefinition = ${function:_processChunk}.ToString()
-
             $extraReqBag = [System.Collections.Concurrent.ConcurrentBag[Object]]::new()
             $throttledReqBag = [System.Collections.Concurrent.ConcurrentBag[Object]]::new()
             $retryAfterBag = [System.Collections.Concurrent.ConcurrentBag[Int32]]::new()
 
-            $requestChunkList = for ($i = 0; $i -lt $allRequest.Count; $i += $chunkSize) {
-                , ($allRequest | Select-Object -Skip $i -First $chunkSize)
-            }
+            $requestChunkList = @(for ($i = 0; $i -lt $allRequest.Count; $i += $chunkSize) {
+                    , @($allRequest | Select-Object -Skip $i -First $chunkSize)
+                })
 
-            # if there are enough requests to process, run in parallel, otherwise run sequentially to avoid unnecessary overhead of parallelization
-            $useParallel = $PSVersionTable.PSEdition -eq "Core" -and $allRequest.Count -ge (2 * $chunkSize)
+            # if there are at least two request chunks to process, run in parallel, otherwise run sequentially to avoid unnecessary overhead of parallelization
+            $useParallel = $PSVersionTable.PSEdition -eq "Core" -and $allRequest.Count -gt $chunkSize
 
             if ($useParallel) {
-                Write-Verbose "Running in parallel with throttle limit of $throttleLimit (number of threads running at the same time) as there are $($allRequest.Count) requests to process"
+                $processChunkDefinition = "function _processChunk { ${function:_processChunk} }"
+
+                Write-Verbose "Running in parallel with throttle limit of $throttleLimit threads because both requirements are met (running in PSH Core, number of requests to process ($($allRequest.Count)))"
                 $requestChunkList | ForEach-Object -Parallel {
-                    & ([ScriptBlock]::Create($using:processChunkDefinition)) -requestChunk $_ -requestUri $using:requestUri -graphVersion $using:graphVersion -dontBeautifyResult ([bool]$using:dontBeautifyResult) -dontAddRequestId ([bool]$using:dontAddRequestId) -dontFollowNextLink ([bool]$using:dontFollowNextLink) -separateErrors ([bool]$using:separateErrors) -extraReqBag $using:extraReqBag -throttledReqBag $using:throttledReqBag -retryAfterBag $using:retryAfterBag
+                    # recreate the function in the parallel runspace
+                    . ([ScriptBlock]::Create($using:processChunkDefinition))
+
+                    $param = @{
+                        requestChunk       = $_
+                        requestUri         = $using:requestUri
+                        graphVersion       = $using:graphVersion
+                        dontBeautifyResult = [bool]$using:dontBeautifyResult
+                        dontAddRequestId   = [bool]$using:dontAddRequestId
+                        dontFollowNextLink = [bool]$using:dontFollowNextLink
+                        separateErrors     = [bool]$using:separateErrors
+                        extraReqBag        = $using:extraReqBag
+                        throttledReqBag    = $using:throttledReqBag
+                        retryAfterBag      = $using:retryAfterBag
+                    }
+                    if ($using:VerbosePreference) {
+                        $param.Verbose = $true
+                    }
+                    _processChunk @param
                 } -ThrottleLimit $throttleLimit
             } else {
                 Write-Verbose "Running sequentially as not being run in PowerShell Core and/or there are just $($allRequest.Count) requests to process"
