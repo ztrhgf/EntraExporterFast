@@ -62,6 +62,6 @@
 
         $outputFileName = Join-Path -Path $rootFolder -ChildPath "$id.json"
 
-        $result | ConvertTo-Json -depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+        $result | SaveAs-SortedJSON -Path $outputFileName
     }
 }

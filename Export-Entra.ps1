@@ -404,7 +404,7 @@
 
             Invoke-FilePathCheck -FilePath $outputFileName
 
-            $item | Select-Object * -ExcludeProperty RequestId | ConvertTo-Json -Depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+            $item | SaveAs-SortedJSON -Path $outputFileName
         }
     }
     #endregion helper functions

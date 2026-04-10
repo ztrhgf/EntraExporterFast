@@ -233,6 +233,6 @@
 
         Invoke-FilePathCheck -FilePath $outputFileName
 
-        $item | ConvertTo-Json -depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+        $item | SaveAs-SortedJSON -Path $outputFileName
     }
 }

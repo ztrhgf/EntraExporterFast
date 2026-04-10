@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.9'
+    ModuleVersion = '1.0.10'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -77,7 +77,8 @@
         'internal\Get-MgGraphAllPages.ps1'
         'internal\Get-AzureDirectoryObject.ps1'
         'internal\Invoke-FilePathCheck.ps1'
-        'internal/Invoke-RoleEligibilityScheduleRequestIdSimplification.ps1'
+        'internal\Invoke-RoleEligibilityScheduleRequestIdSimplification.ps1'
+        'internal\SaveAs-SortedJSON.ps1'
         'command\Get-AccessPackageAssignmentPolicies.ps1'
         'command\Get-AccessPackageAssignments.ps1'
         'command\Get-AccessPackageResourceScopes.ps1'
@@ -138,6 +139,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.10
+                CHANGED
+                    - export sorted JSONs to avoid clutter in git history when just order of the object properties were changed
             1.0.9
                 FIXED
                     - path processing on linux

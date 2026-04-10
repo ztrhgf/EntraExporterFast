@@ -112,7 +112,7 @@ authorizationresources
             $outputFileName = $outputFileName + ".replace"
         }
 
-        $item | ConvertTo-Json -depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+        $item | SaveAs-SortedJSON -Path $outputFileName 
     }
     #endregion IAM Role assignments export
 
@@ -123,7 +123,7 @@ authorizationresources
         $roleId = $result.name
         $outputPath = Join-Path -Path $definitionsFolder -ChildPath "BuiltInRole"
         $outputFileName = Join-Path -Path $outputPath -ChildPath "$roleId.json"
-        $result | select * -ExcludeProperty RequestName | ConvertTo-Json -depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+        $result | SaveAs-SortedJSON -Path $outputFileName
     }
     #endregion export built-in RBAC (IAM) roles
 
@@ -152,7 +152,7 @@ ResourceContainers
 
         $outputFileName = Join-Path -Path $outputPath -ChildPath "$roleId.json"
 
-        $result | select * -ExcludeProperty RequestName | ConvertTo-Json -depth 100 | Out-File (New-Item -Path $outputFileName -Force)
+        $result | SaveAs-SortedJSON -Path $outputFileName
     }
     #endregion export custom RBAC (IAM) roles
     #endregion IAM Role definitions export
