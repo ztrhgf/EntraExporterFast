@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.10'
+    ModuleVersion = '1.0.11'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -139,6 +139,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.11
+                ADDED
+                    - Conditional Access Policies Plans export
             1.0.10
                 CHANGED
                     - export sorted JSONs to avoid clutter in git history when just order of the object properties were changed

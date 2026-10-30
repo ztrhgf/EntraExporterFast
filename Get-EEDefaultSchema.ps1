@@ -403,6 +403,24 @@ function Get-EEDefaultSchema  {
             Tag = @('All', 'Config', 'ConditionalAccess', 'PIM', 'PIMDirectoryRoles', 'PIMResources', 'PIMGroups')
             DelegatedPermission = 'Policy.Read.All'
             ApplicationPermission = 'Policy.Read.All'
+        },
+        @{
+            GraphUri = 'identity/conditionalAccess/plans'
+            Path = 'Identity/Conditional/Plans'
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'ConditionalAccess')
+            DelegatedPermission = 'Policy.Read.All'
+            ApplicationPermission = 'Policy.Read.All'
+            Children = @(
+                @{
+                    GraphUri = 'identity/conditionalAccess/plans/<placeholder>/rules'
+                    Path = 'Rules'
+                    ApiVersion = 'beta'
+                    Tag = @('All', 'Config', 'ConditionalAccess')
+                    DelegatedPermission = 'Policy.Read.All'
+                    ApplicationPermission = 'Policy.Read.All'
+                }
+            )
         }
 
         # Identity Governance,
@@ -900,6 +918,26 @@ function Get-EEDefaultSchema  {
         @{
             GraphUri = 'roleManagement/exchange/roleAssignments'
             Path = 'RoleManagement/Exchange/RoleAssignments'
+            QueryParameters = @{ expand = 'principals' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'ExchangeRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        },
+        # RoleManagement - Exchange Role Assignments
+        @{
+            GraphUri = 'roleManagement/exchange/roleAssignments'
+            Path = 'RoleManagement/Exchange/RoleAssignments'
+            QueryParameters = @{ expand = 'principals' }
+            ApiVersion = 'beta'
+            Tag = @('All', 'Config', 'RoleManagement', 'ExchangeRoles')
+            DelegatedPermission = 'RoleManagement.Read.All'
+            ApplicationPermission = 'RoleManagement.Read.All'            
+        },
+        # RoleManagement - Exchange Custom App Scopes
+        @{
+            GraphUri = 'roleManagement/exchange/customAppScopes'
+            Path = 'RoleManagement/Exchange/CustomAppScopes'
             ApiVersion = 'beta'
             Tag = @('All', 'Config', 'RoleManagement', 'ExchangeRoles')
             DelegatedPermission = 'RoleManagement.Read.All'
