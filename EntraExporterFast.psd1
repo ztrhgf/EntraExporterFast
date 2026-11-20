@@ -4,7 +4,7 @@
     RootModule = 'EntraExporterFast.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.0.11'
+    ModuleVersion = '1.0.12'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core','Desktop'
@@ -139,6 +139,9 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = '
+            1.0.12
+                CHANGED
+                    - Updated Get-AzurePIMGroups to make it faster
             1.0.11
                 ADDED
                     - Conditional Access Policies Plans export

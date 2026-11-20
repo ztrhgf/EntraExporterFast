@@ -6,23 +6,21 @@
     )
 
     #region functions
-    function Get-PIMSupportedGroup {
-        <#
-        .SYNOPSIS
-        Get all groups that can be theoretically used for PIM assignment.
+function Get-PIMEnabledGroup {
+    <#
+    .SYNOPSIS
+    Get PIM enabled groups.
+    #>
 
-        Unfortunately I don't know a better way to filter out groups that have eligible PIM assignments.
-        #>
+    [CmdletBinding()]
+    param()
 
-        [CmdletBinding()]
-        param()
-
-        if (!(Get-Command Get-MgContext -ErrorAction silentlycontinue) -or !(Get-MgContext)) {
-            throw "$($MyInvocation.MyCommand): Authentication needed. Please call Connect-MgGraph."
-        }
-
-        Invoke-MgGraphRequest -Uri "v1.0/groups?`$select=Id,DisplayName,OnPremisesSyncEnabled,GroupTypes,MailEnabled,SecurityEnabled" | Get-MgGraphAllPages | ? { $_.onPremisesSyncEnabled -eq $null -and $_.GroupTypes -notcontains 'DynamicMembership' -and !($_.MailEnabled -and $_.SecurityEnabled -and $_.GroupTypes -notcontains 'Unified') -and !($_.MailEnabled -and !$_.SecurityEnabled) }
+    if (!(Get-Command Get-MgContext -ErrorAction silentlycontinue) -or !(Get-MgContext)) {
+        throw "$($MyInvocation.MyCommand): Authentication needed. Please call Connect-MgGraph."
     }
+
+    Invoke-MgGraphRequest -Uri 'https://graph.microsoft.com/beta/identityGovernance/privilegedAccess/group/resources' | Get-MgGraphAllPages | ForEach-Object { Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/groups/$($_.id)" } | Get-MgGraphAllPages
+}
 
     function Get-PIMGroupEligibleAssignment {
         <#
@@ -62,19 +60,15 @@
         }
 
         if ($groupId) {
-            $possiblePIMGroupId = $groupId
+            $PIMEnabledGroupId = $groupId
         } else {
-            # I don't know how to get the list of PIM enabled groups so I have to find them
-            # by searching for eligible role assignments for every PIM-supported-type group
-            Write-Warning "Searching for groups with PIM eligible assignment. This can take a while."
-
-            $possiblePIMGroupId = (Get-PIMSupportedGroup).id
+            $PIMEnabledGroupId = (Get-PIMEnabledGroup).id
         }
 
-        if (!$possiblePIMGroupId) { return }
+        if (!$PIMEnabledGroupId) { return }
 
         # search for groups that have some PIM settings defined
-        $groupWithPIMEligibleAssignment = New-GraphBatchRequest -url "identityGovernance/privilegedAccess/group/eligibilitySchedules?`$filter=groupId eq '<placeholder>'" -placeholder $possiblePIMGroupId | Invoke-GraphBatchRequest -graphVersion v1.0 -dontAddRequestId
+        $groupWithPIMEligibleAssignment = New-GraphBatchRequest -url "identityGovernance/privilegedAccess/group/eligibilitySchedules?`$filter=groupId eq '<placeholder>'" -placeholder $PIMEnabledGroupId | Invoke-GraphBatchRequest -graphVersion v1.0 -dontAddRequestId
 
         if (!$groupWithPIMEligibleAssignment) {
             Write-Warning "None of the groups have PIM eligible assignments"
